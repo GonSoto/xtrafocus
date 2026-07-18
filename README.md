@@ -1,9 +1,12 @@
-# Focus for X
+# Xtra Focus
 
 An [Unhook](https://unhook.app/)-style distraction blocker for **X (Twitter)**, built as a
 Chromium extension (Manifest V3). Hide everything you didn't come for — the algorithmic
 feed, trends, follow suggestions, ads, Grok, Premium upsells, notification badges — and
 keep only what you deem worth it. Every element is an individual toggle.
+
+Xtra Focus is an independent, unofficial project. It is not affiliated with, endorsed
+by, or sponsored by X Corp.
 
 ## Install (load unpacked)
 
@@ -60,5 +63,30 @@ Plus a master switch in the popup header to disable everything at once.
   language to `AD_LABELS` in [src/content.js](src/content.js) if needed.
 - "Default to Following" assumes Following is the second tab on home (X's default
   layout, also with pinned lists).
+
+## Chrome Web Store submission notes
+
+Checklist for the Developer Dashboard — none of this lives in the extension package itself:
+
+- **Privacy policy URL** — required since the content script runs on x.com/twitter.com.
+  Use [PRIVACY.md](PRIVACY.md) (host it via GitHub Pages, or paste it into any static page)
+  — it states plainly that no data is collected or transmitted anywhere.
+- **Permission justifications** (the Dashboard asks for these in plain English):
+  - `storage`: saves the user's own toggle preferences locally / synced across their
+    Chrome profile. Nothing else is stored.
+  - Host access to `x.com` / `twitter.com`: required to apply CSS and DOM changes that
+    hide selected UI elements. The extension never reads, stores, or transmits page
+    content, tweets, or credentials.
+- **Single purpose statement**: hides distraction-inducing UI elements on X (Twitter),
+  configurable per-element by the user.
+- **Store listing description**: include a line noting this is an independent project,
+  not affiliated with, endorsed by, or sponsored by X Corp — nominative references to
+  "X (Twitter)" and "Grok" in the description are descriptive/fair-use, not a claim of
+  affiliation.
+- **Screenshots / promo tile**: not yet produced — capture 1–2 screenshots of the popup
+  and a before/after of a decluttered timeline (recommended: 1280×800), plus an optional
+  440×280 small promo tile.
+
+## Contact
 
 If you find any bugs, errors or missing features you would like to see in the extension, message me on [X](x.com/gsotooo_) or drop me an email at gonsotomayor@gmail.com

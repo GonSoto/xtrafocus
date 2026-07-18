@@ -1,4 +1,4 @@
-/* Focus for X — all hiding rules.
+/* Xtra Focus — all hiding rules.
    Every rule is gated on html[data-dx-on] (master switch) plus the attribute
    for its toggle, set by src/content.js. Page-specific rules are additionally
    gated on html[data-dx-page="..."]. */

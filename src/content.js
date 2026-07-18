@@ -1,4 +1,4 @@
-// Focus for X — content script.
+// Xtra Focus — content script.
 // Two mechanisms:
 //  1. Settings that map 1:1 to CSS: we mirror them as data-dx-* attributes on <html>
 //     and src/hide.css does the rest. Cheap, instant, survives React re-renders.
@@ -227,7 +227,7 @@
       <div class="dx-zen-emoji">🌿</div>
       <h2>Timeline hidden</h2>
       <p>You're here on purpose. Search what you came for, check a profile, or close the tab.</p>
-      <p class="dx-zen-hint">Toggle "Hide home timeline" in the Focus for X popup to bring it back.</p>`;
+      <p class="dx-zen-hint">Toggle "Hide home timeline" in the Xtra Focus popup to bring it back.</p>`;
     column.appendChild(div);
   }
 
