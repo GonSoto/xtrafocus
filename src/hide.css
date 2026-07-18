@@ -101,11 +101,11 @@ html[data-dx-on][data-dx-hide-grok] button[aria-label*="Grok"] {
 
 /* --- Content ------------------------------------------------------------- */
 
-/* Promoted posts that carry the placementTracking wrapper (the text-label
-   detection in content.js catches the rest). */
-html[data-dx-on][data-dx-hide-ads] [data-testid="cellInnerDiv"]:has([data-testid="placementTracking"]) {
-  display: none !important;
-}
+/* Promoted-post hiding is handled entirely by content.js (it looks for the
+   "Ad"/"Promoted" disclosure in the post's own byline). There is deliberately
+   no CSS fast-path here: X's data-testid="placementTracking" wrapper looked
+   like an ad marker but actually wraps ordinary video players too, so a rule
+   keyed on it was hiding every post containing a video. */
 
 /* Engagement counts in the action bar under every post (reply, repost, like,
    bookmark) plus the view-count analytics link. */

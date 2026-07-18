@@ -77,11 +77,16 @@
   // --- JS-driven features -------------------------------------------------
 
   function isAdArticle(article) {
-    for (const span of article.querySelectorAll('span')) {
-      if (!AD_LABELS.has(span.textContent.trim())) continue;
-      // Ignore matches inside the post's own text (someone tweeting the word "Ad").
-      if (span.closest('[data-testid="tweetText"]')) continue;
-      return true;
+    // X always renders the "Ad"/"Promoted" disclosure inside the post's own
+    // byline row (next to the name/handle/timestamp) — never elsewhere in the
+    // body. Scoping to the first byline in the article (i.e. the outer post's
+    // own, by document order) means a quote-tweet or reply that merely
+    // embeds a promoted tweet further down can't trigger a false match,
+    // regardless of whether that embed happens to use a nested <article> tag.
+    const byline = article.querySelector('[data-testid="User-Name"]');
+    if (!byline) return false;
+    for (const span of byline.querySelectorAll('span')) {
+      if (AD_LABELS.has(span.textContent.trim())) return true;
     }
     return false;
   }
