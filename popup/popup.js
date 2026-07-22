@@ -175,6 +175,10 @@ pauseCustomStart.addEventListener('click', () => {
   startPause(Number(pauseMinutes.value));
 });
 
+pauseMinutes.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') startPause(Number(pauseMinutes.value));
+});
+
 pauseResumeBtn.addEventListener('click', () => {
   chrome.storage.local.remove('pauseUntil');
   showPauseControls();

@@ -76,15 +76,23 @@
 
   // --- JS-driven features -------------------------------------------------
 
+  // Quote-tweet embeds don't use a nested <article> — they're a clickable
+  // card wrapped in role="link" + tabindex. Used to keep a quoted/embedded
+  // post's own ad or paid-partnership disclosure from being misread as
+  // belonging to the outer post.
+  function isInQuoteEmbed(el, article) {
+    for (let node = el.parentElement; node && node !== article; node = node.parentElement) {
+      if (node.getAttribute('role') === 'link' && node.hasAttribute('tabindex')) return true;
+    }
+    return false;
+  }
+
   function isAdArticle(article) {
     // Promoted posts: X renders the "Ad"/"Promoted" disclosure inside the
     // post's own byline row (next to the name/handle/timestamp) — never
-    // elsewhere in the body. Scoping to the first byline in the article
-    // (i.e. the outer post's own, by document order) means a quote-tweet or
-    // reply that merely embeds a promoted tweet further down can't trigger a
-    // false match.
+    // elsewhere in the body.
     const byline = article.querySelector('[data-testid="User-Name"]');
-    if (byline) {
+    if (byline && !isInQuoteEmbed(byline, article)) {
       for (const span of byline.querySelectorAll('span')) {
         if (AD_LABELS.has(span.textContent.trim())) return true;
       }
@@ -92,10 +100,14 @@
     // Paid partnerships ("Paid partnership" / "Colaboración pagada" / …):
     // a separate kind of sponsored post whose disclosure is a footer link to
     // X's paid-partnerships policy. Matching the href instead of the label
-    // text is locale-independent. Exclude links inside the post's own text,
-    // so merely linking to the policy page doesn't get a post hidden.
-    const disclosure = article.querySelector('a[href*="paid-partnerships-policy"]');
-    if (disclosure && !disclosure.closest('[data-testid="tweetText"]')) return true;
+    // text is locale-independent. Exclude links inside the post's own text
+    // (merely linking the policy page) and inside a quoted/embedded post
+    // (that post being sponsored doesn't make the outer one sponsored).
+    for (const a of article.querySelectorAll('a[href*="paid-partnerships-policy"]')) {
+      if (a.closest('[data-testid="tweetText"]')) continue;
+      if (isInQuoteEmbed(a, article)) continue;
+      return true;
+    }
     return false;
   }
 
@@ -117,10 +129,13 @@
   }
 
   function handleDiscoverMore() {
-    if (!settings.hideDiscoverMore || page !== 'status') {
-      clearMarks('discover');
-      return;
-    }
+    // Re-derive from scratch every scan rather than only adding marks: X
+    // recycles cellInnerDiv nodes on long threads as you scroll, so a node
+    // marked hidden here could later get reused for an unrelated real reply
+    // while still carrying the stale mark. Clearing first keeps this
+    // self-correcting, matching how handleAds already re-evaluates every cell.
+    clearMarks('discover');
+    if (!settings.hideDiscoverMore || page !== 'status') return;
     for (const h of document.querySelectorAll('[data-testid="cellInnerDiv"] h2')) {
       const text = h.textContent.trim();
       if (!DISCOVER_LABELS.some((label) => text.startsWith(label))) continue;
@@ -182,10 +197,8 @@
   }
 
   function handleTrends() {
-    if (!settings.hideTrends) {
-      clearMarks('trend');
-      return;
-    }
+    clearMarks('trend');
+    if (!settings.hideTrends) return;
     const sidebar = document.querySelector('[data-testid="sidebarColumn"]');
     if (!sidebar) return;
     const trend = sidebar.querySelector('[data-testid="trend"]');
@@ -209,24 +222,25 @@
   }
 
   function handleSidebarCards() {
-    if (!settings.hideWhoToFollow) clearMarks('card-wtf');
-    if (!settings.hidePremium) clearMarks('card-premium');
+    clearMarks('card-wtf');
+    clearMarks('card-premium');
+    if (!settings.hideWhoToFollow && !settings.hidePremium) return;
     const sidebar = document.querySelector('[data-testid="sidebarColumn"]');
     if (!sidebar) return;
     for (const aside of sidebar.querySelectorAll('aside')) {
       if (settings.hideWhoToFollow && aside.querySelector('[data-testid="UserCell"]')) {
-        outermostLoneWrapper(aside, sidebar).setAttribute('data-dx-hidden', 'card-wtf');
+        outermostLoneWrapper(aside, sidebar, hasSearchBox).setAttribute('data-dx-hidden', 'card-wtf');
       } else if (settings.hidePremium && aside.querySelector('a[href^="/i/premium"]')) {
-        outermostLoneWrapper(aside, sidebar).setAttribute('data-dx-hidden', 'card-premium');
+        outermostLoneWrapper(aside, sidebar, hasSearchBox).setAttribute('data-dx-hidden', 'card-premium');
       }
     }
   }
 
+  let lastDrawerProbe = 0;
+
   function handleDMDrawer() {
-    if (!settings.hideDMDrawer) {
-      clearMarks('dm');
-      return;
-    }
+    clearMarks('dm');
+    if (!settings.hideDMDrawer) return;
     let found = false;
     for (const el of document.querySelectorAll('[data-testid*="Drawer"], [data-testid*="drawer"]')) {
       const id = el.getAttribute('data-testid') || '';
@@ -235,6 +249,14 @@
       found = true;
     }
     if (found) return;
+    // The positional fallback forces layout (elementFromPoint) and style
+    // recalc (getComputedStyle) on every ancestor it walks — cheap once, but
+    // X's page mutates constantly (live view counts, video timers), so scan()
+    // can run several times a second. Throttle it rather than re-probing on
+    // every single scan when the fast path above keeps missing.
+    const now = Date.now();
+    if (now - lastDrawerProbe < 2000) return;
+    lastDrawerProbe = now;
     const drawer = findDockedDrawer();
     if (drawer) drawer.setAttribute('data-dx-hidden', 'dm');
   }

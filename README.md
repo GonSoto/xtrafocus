@@ -61,7 +61,9 @@ own — no need to remember to turn anything back on.
   settings as `data-dx-*` attributes on `<html>`; every rule is gated on those
   attributes, so toggling is instant and survives X's React re-renders.
 - **DOM-driven hiding** ([src/content.js](src/content.js)): things CSS can't detect —
-  promoted posts (localized "Ad" label), numeric badge pills, "Discover more" sections,
+  sponsored posts (a localized "Ad"/"Promoted" label in the byline, or a paid-partnership
+  disclosure link — both scoped to skip a quoted/embedded post so quoting a sponsored
+  tweet doesn't hide your own), numeric badge pills, "Discover more" sections,
   auto-switching to the Following tab — are handled by a debounced `MutationObserver`
   that marks elements with `data-dx-hidden`.
 - **SPA awareness**: X never reloads the page, so a route watcher (Navigation API +
@@ -76,8 +78,10 @@ own — no need to remember to turn anything back on.
 
 - X ships UI changes frequently; selectors (mostly `data-testid` based) may need
   occasional touch-ups in [src/hide.css](src/hide.css).
-- Ad detection matches the localized "Ad/Promoted" label for EN/ES/DE/FR/PT. Add your
-  language to `AD_LABELS` in [src/content.js](src/content.js) if needed.
+- Promoted-post detection matches the localized "Ad/Promoted" byline label for
+  EN/ES/DE/FR/PT — add your language to `AD_LABELS` in [src/content.js](src/content.js)
+  if needed. Paid-partnership detection matches the disclosure link's URL instead of its
+  label text, so it's already locale-independent.
 - "Default to Following" assumes Following is the second tab on home (X's default
   layout, also with pinned lists).
 
