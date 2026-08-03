@@ -164,6 +164,29 @@ main.off {
   background: var(--surface);
 }
 
+/* Nested toggles — indented under a parent they're fully covered by. */
+.row.row-indent {
+  padding-left: 40px;
+}
+
+.row.is-locked {
+  cursor: not-allowed;
+}
+
+.row.is-locked:hover {
+  background: none;
+}
+
+.row.is-locked .label,
+.row.is-locked .hint {
+  color: var(--muted);
+}
+
+.switch input:disabled + .slider {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .row .labels {
   flex: 1;
   min-width: 0;

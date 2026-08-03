@@ -6,15 +6,15 @@ const SECTIONS = [
     title: 'Home',
     items: [
       ['hideFeed', 'Hide home timeline', 'Replaces the feed with a calm placeholder'],
-      ['followingOnly', 'Default to "Following" tab', 'Auto-switches away from the algorithmic feed'],
-      ['hideForYouTab', 'Hide "For You" tab', '']
+      ['followingOnly', 'Default to "Following" tab', 'Auto-switches away from the algorithmic feed', { disabledBy: 'hideFeed' }],
+      ['hideForYouTab', 'Hide "For You" tab', '', { disabledBy: 'hideFeed' }]
     ]
   },
   {
     title: 'Right sidebar',
     items: [
       ['hideSidebar', 'Hide entire sidebar', 'Trends, suggestions, search — all of it'],
-      ['hideTrends', 'Hide trends', '"What’s happening" card'],
+      ['hideTrends', 'Hide trends', '"What’s happening" card', { disabledBy: 'hideSidebar' }],
       ['hideWhoToFollow', 'Hide "Who to follow"', 'Sidebar cards and inline feed suggestions'],
       ['hidePremium', 'Hide Premium upsells', '']
     ]
@@ -56,9 +56,10 @@ const pauseCustomStart = document.getElementById('pauseCustomStart');
 const pauseCustomCancel = document.getElementById('pauseCustomCancel');
 const pauseResumeBtn = document.getElementById('pauseResumeBtn');
 
-function buildRow(key, label, hint) {
+function buildRow(key, label, hint, opts) {
   const row = document.createElement('label');
   row.className = 'row';
+  if (opts && opts.disabledBy) row.classList.add('row-indent');
 
   const labels = document.createElement('span');
   labels.className = 'labels';
@@ -78,6 +79,7 @@ function buildRow(key, label, hint) {
   const input = document.createElement('input');
   input.type = 'checkbox';
   input.dataset.key = key;
+  if (opts && opts.disabledBy) input.dataset.disabledBy = opts.disabledBy;
   const slider = document.createElement('span');
   slider.className = 'slider';
   sw.appendChild(input);
@@ -85,6 +87,7 @@ function buildRow(key, label, hint) {
 
   input.addEventListener('change', () => {
     chrome.storage.sync.set({ [key]: input.checked });
+    applyDependentStates();
   });
 
   row.appendChild(labels);
@@ -92,13 +95,40 @@ function buildRow(key, label, hint) {
   return row;
 }
 
+// A toggle can be fully redundant because a parent toggle already covers
+// everything it does (e.g. "Hide trends" once "Hide entire sidebar" is on).
+// Locks such a child's checkbox — dimmed and non-interactive — for exactly as
+// long as its parent is checked. Reads the parent's state straight from the
+// live DOM rather than storage: by the time any change handler runs, the
+// parent checkbox's own .checked is already current, so no async round-trip
+// is needed.
+//
+// Activating the parent also flips any not-yet-on child to on (and persists
+// it), rather than leaving its stored value untouched: the parent being on
+// means "this is hidden" for everything under it, so the child's own
+// preference should genuinely agree — that way, the moment the parent is
+// turned back off, the child continues hiding its slice on its own, instead
+// of silently reverting to whatever it happened to be set to before.
+function applyDependentStates() {
+  for (const child of list.querySelectorAll('input[data-disabled-by]')) {
+    const parent = list.querySelector(`input[data-key="${child.dataset.disabledBy}"]`);
+    const locked = !!(parent && parent.checked);
+    if (locked && !child.checked) {
+      child.checked = true;
+      chrome.storage.sync.set({ [child.dataset.key]: true });
+    }
+    child.disabled = locked;
+    child.closest('.row').classList.toggle('is-locked', locked);
+  }
+}
+
 for (const section of SECTIONS) {
   const title = document.createElement('div');
   title.className = 'section-title';
   title.textContent = section.title;
   list.appendChild(title);
-  for (const [key, label, hint] of section.items) {
-    list.appendChild(buildRow(key, label, hint));
+  for (const [key, label, hint, opts] of section.items) {
+    list.appendChild(buildRow(key, label, hint, opts));
   }
 }
 
@@ -115,6 +145,7 @@ chrome.storage.sync.get(DX_DEFAULTS, (settings) => {
   for (const input of list.querySelectorAll('input[data-key]')) {
     input.checked = !!settings[input.dataset.key];
   }
+  applyDependentStates();
 });
 
 // --- Pause (temporary snooze, independent of the master enable/disable) ---
