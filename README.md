@@ -29,6 +29,7 @@ browser profile (`chrome.storage.sync`).
 | Sidebar | Hide trends ("What's happening") | **on** |
 | Sidebar | Hide "Who to follow" (sidebar + inline in feed) | **on** |
 | Sidebar | Hide Premium upsells | **on** |
+| Sidebar | Hide search box (sidebar + the profile-page search tab) | off |
 | Nav | Hide Explore link | off |
 | Nav | Hide Communities | **on** |
 | Nav | Hide Grok (nav, drawer, buttons — everywhere) | **on** |
@@ -42,6 +43,13 @@ browser profile (`chrome.storage.sync`).
 | Content | Block Explore page (redirect to home) | off |
 
 Plus a master switch in the popup header to disable everything at once.
+
+Some toggles are fully covered by a broader one above them (e.g. "Hide trends" once "Hide
+entire sidebar" is on) — those render indented and grey out, non-clickable, for exactly as
+long as the broader toggle is on, so it's never ambiguous whether a setting is doing
+anything. Turning the broader toggle on also flips any of its indented settings that were
+still off, so they keep hiding their own slice on their own the moment the broader toggle
+is turned back off.
 
 ## Pause
 
@@ -84,6 +92,10 @@ own — no need to remember to turn anything back on.
   label text, so it's already locale-independent.
 - "Default to Following" assumes Following is the second tab on home (X's default
   layout, also with pinned lists).
+- The profile-page search tab (hidden by "Hide search box") is a bare `<div>` with no
+  `href`, `aria-label`, or stable `data-testid`, so it's matched by its icon's SVG path
+  instead — confirmed against real profile-page markup, but a redraw of that icon in a
+  future X update would need a new path fingerprint.
 
 ## Contact
 

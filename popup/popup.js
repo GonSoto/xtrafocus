@@ -16,7 +16,8 @@ const SECTIONS = [
       ['hideSidebar', 'Hide entire sidebar', 'Trends, suggestions, search — all of it'],
       ['hideTrends', 'Hide trends', '"What’s happening" card', { disabledBy: 'hideSidebar' }],
       ['hideWhoToFollow', 'Hide "Who to follow"', 'Sidebar cards and inline feed suggestions'],
-      ['hidePremium', 'Hide Premium upsells', '']
+      ['hidePremium', 'Hide Premium upsells', ''],
+      ['hideSidebarSearch', 'Hide search box', 'Sidebar search + profile search', { disabledBy: 'hideSidebar' }]
     ]
   },
   {

@@ -13,6 +13,7 @@ const DX_DEFAULTS = {
   hideTrends: true,
   hideWhoToFollow: true,
   hidePremium: true,
+  hideSidebarSearch: false,
 
   // Left navigation
   hideNavExplore: false,

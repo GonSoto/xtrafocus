@@ -18,6 +18,7 @@
     hideTrends: 'data-dx-hide-trends',
     hideWhoToFollow: 'data-dx-hide-wtf',
     hidePremium: 'data-dx-hide-premium',
+    hideSidebarSearch: 'data-dx-hide-sidebar-search',
     hideNavExplore: 'data-dx-hide-nav-explore',
     hideNavCommunities: 'data-dx-hide-nav-communities',
     hideNavGrok: 'data-dx-hide-grok',
@@ -60,11 +61,24 @@
     return settings.enabled && !isPaused();
   }
 
+  // X's own reserved top-level routes — anything else is someone's @handle,
+  // i.e. a profile page (including its sub-tabs: /user/with_replies,
+  // /user/media, /user/likes, etc. — not enumerated, just anything nested
+  // under a non-reserved first segment).
+  const RESERVED_ROOT_PATHS = new Set([
+    'home', 'explore', 'notifications', 'messages', 'i', 'settings', 'compose',
+    'search', 'jobs', 'login', 'logout', 'tos', 'privacy', 'about', 'download'
+  ]);
+
   function computePage() {
     const p = location.pathname;
     if (p === '/' || p === '/home') return 'home';
     if (p === '/explore' || p.startsWith('/explore/')) return 'explore';
     if (p.includes('/status/')) return 'status';
+    const segments = p.split('/').filter(Boolean);
+    if (segments.length > 0 && !RESERVED_ROOT_PATHS.has(segments[0].toLowerCase())) {
+      return 'profile';
+    }
     return 'other';
   }
 
@@ -236,6 +250,50 @@
     }
   }
 
+  function hasOtherSidebarWidget(el) {
+    return !!el.querySelector('[data-testid="trend"], aside');
+  }
+
+  function handleSidebarSearch() {
+    clearMarks('sidebar-search');
+    if (!settings.hideSidebarSearch) return;
+    const sidebar = document.querySelector('[data-testid="sidebarColumn"]');
+    if (sidebar) {
+      const box = sidebar.querySelector(
+        'form[role="search"], input[data-testid="SearchBox_Search_Input"]'
+      );
+      // Mirror image of the guard in handleTrends()/handleSidebarCards(): the
+      // climb here must not absorb an ancestor that also wraps trends or a
+      // WTF/Premium card, or hiding search alone could take another widget
+      // down with it.
+      if (box) {
+        outermostLoneWrapper(box, sidebar, hasOtherSidebarWidget).setAttribute(
+          'data-dx-hidden',
+          'sidebar-search'
+        );
+      }
+    }
+    // The search tab shown on profile pages doesn't actually scope search to
+    // that profile — X's "search this user" flow produces a plain, unscoped
+    // search — so it's hidden here too rather than left as a dead end. It's
+    // a bare <div> tab (no href, no aria-label, no stable data-testid), so
+    // the only reliable fingerprint is its icon's SVG path — X reuses the
+    // same path for every search icon across the app, and this one is
+    // confirmed from the actual profile-page markup.
+    if (page === 'profile') {
+      // Scoped to primaryColumn (not the sidebar) rather than a guessed
+      // sub-container testid — a guessed scope that happens to exist but
+      // doesn't contain the icon would silently swallow the search, never
+      // falling through to a wider, correct scope.
+      const scope = document.querySelector('[data-testid="primaryColumn"]');
+      const icon = scope && scope.querySelector('path[d^="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5"]');
+      if (icon) {
+        const tab = icon.closest('[role="tab"], a, button') || icon.closest('svg').parentElement;
+        outermostLoneWrapper(tab, scope).setAttribute('data-dx-hidden', 'sidebar-search');
+      }
+    }
+  }
+
   let lastDrawerProbe = 0;
 
   function handleDMDrawer() {
@@ -328,6 +386,7 @@
     handleBadges();
     handleTrends();
     handleSidebarCards();
+    handleSidebarSearch();
     handleDMDrawer();
     cleanTitle();
     forceFollowingTab();
@@ -380,6 +439,7 @@
       clearMarks('trend');
       clearMarks('card-wtf');
       clearMarks('card-premium');
+      clearMarks('sidebar-search');
       clearMarks('dm');
       const zen = document.getElementById('dx-zen');
       if (zen) zen.remove();

@@ -55,6 +55,17 @@ html[data-dx-on][data-dx-hide-premium][data-dx-page="home"] main [data-testid="p
   display: none !important;
 }
 
+/* Sidebar search box. Guarded the mirror-image way from the trends/WTF/
+   premium rules above: it must never match a wrapper that also holds one of
+   those widgets, or hiding search alone could take one down with it.
+   content.js's handleSidebarSearch() is the primary mechanism (it also
+   handles the profile-page search icon, which CSS can't target); this is a
+   fast-path bonus for the sidebar box specifically. */
+html[data-dx-on][data-dx-hide-sidebar-search] [data-testid="sidebarColumn"] form[role="search"],
+html[data-dx-on][data-dx-hide-sidebar-search] [data-testid="sidebarColumn"] div:has(> form[role="search"]):not(:has([data-testid="trend"])):not(:has(aside)) {
+  display: none !important;
+}
+
 /* --- Left navigation ----------------------------------------------------- */
 /* X restructures primary navigation by viewport width: a labeled sidebar on
    wide desktop, an icon-only rail as the window narrows, and a bottom tab bar
