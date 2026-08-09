@@ -35,7 +35,7 @@ browser profile (`chrome.storage.sync`).
 | Nav | Hide Grok (nav, drawer, buttons — everywhere) | **on** |
 | Nav | Hide Premium & Verified Orgs | **on** |
 | Nav | Hide Jobs | **on** |
-| Nav | Hide notification badges (incl. tab-title count) | **on** |
+| Nav | Hide notification badges (incl. tab-title count and tab icon's red dot) | **on** |
 | Content | Hide ads (promoted + paid-partnership posts) | **on** |
 | Content | Hide "Discover more" suggestions under posts | **on** |
 | Content | Hide engagement counts (replies, reposts, likes, views) | off |
@@ -96,6 +96,10 @@ own — no need to remember to turn anything back on.
   `href`, `aria-label`, or stable `data-testid`, so it's matched by its icon's SVG path
   instead — confirmed against real profile-page markup, but a redraw of that icon in a
   future X update would need a new path fingerprint.
+- "Hide notification badges" also reverts the tab's favicon whenever X swaps it to the
+  red-dot unread variant. It remembers the first favicon URL it sees as the "clean" one,
+  so if the tab already had unread notifications before the extension loaded, that first
+  URL could itself be the dot variant — reload the tab once to fix it.
 
 ## Contact
 

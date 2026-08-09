@@ -50,6 +50,8 @@
   let lastHref = '';
   let forcedFollowing = false;
   let scanTimer = null;
+  let observedFaviconLink = null;
+  let cleanFaviconHref = null;
 
   function isPaused() {
     return pauseUntil > Date.now();
@@ -345,6 +347,25 @@
     if (m) document.title = m[1];
   }
 
+  // X swaps the tab favicon to a red-dot variant when there are unread
+  // notifications, via a plain href mutation on <link rel="icon"> — no DOM
+  // node this extension's own subtree-scoped MutationObserver would catch.
+  // Track that link and, whenever its href drifts from the first ("clean")
+  // one we ever saw, revert it. Also re-observe if X replaces the node
+  // outright rather than mutating it in place.
+  function handleFavicon() {
+    const link = document.querySelector('link[rel~="icon"]');
+    if (!link) return;
+    if (link !== observedFaviconLink) {
+      observedFaviconLink = link;
+      if (cleanFaviconHref === null) cleanFaviconHref = link.href;
+      new MutationObserver(handleFavicon).observe(link, { attributes: true, attributeFilter: ['href'] });
+    }
+    if (isOn() && settings.hideBadges && cleanFaviconHref && link.href !== cleanFaviconHref) {
+      link.href = cleanFaviconHref;
+    }
+  }
+
   function forceFollowingTab() {
     if (!settings.followingOnly || page !== 'home' || forcedFollowing) return;
     const tablist = document.querySelector('main [role="tablist"]');
@@ -389,6 +410,7 @@
     handleSidebarSearch();
     handleDMDrawer();
     cleanTitle();
+    handleFavicon();
     forceFollowingTab();
     ensurePlaceholder();
   }

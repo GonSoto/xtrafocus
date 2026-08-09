@@ -28,7 +28,7 @@ const SECTIONS = [
       ['hideNavGrok', 'Hide Grok', 'Everywhere: nav, buttons, drawer'],
       ['hideNavPremium', 'Hide Premium & Verified Orgs', ''],
       ['hideNavJobs', 'Hide Jobs', ''],
-      ['hideBadges', 'Hide notification badges', 'Also strips the "(3)" count from the tab title']
+      ['hideBadges', 'Hide notification badges', 'Also strips the "(3)" tab title and the tab icon\'s red dot']
     ]
   },
   {
