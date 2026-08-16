@@ -50,8 +50,7 @@
   let lastHref = '';
   let forcedFollowing = false;
   let scanTimer = null;
-  let observedFaviconLink = null;
-  let cleanFaviconHref = null;
+  let observedFaviconLinks = new WeakSet();
 
   function isPaused() {
     return pauseUntil > Date.now();
@@ -347,22 +346,44 @@
     if (m) document.title = m[1];
   }
 
+  // Same unread signal handleBadges() already scans for, just scoped to the
+  // Notifications nav link specifically — the authoritative source of truth
+  // for whether the favicon *should* currently be showing its plain (no-dot)
+  // state, since X drives both off the same unread count.
+  function notificationsUnread() {
+    for (const a of document.querySelectorAll(
+      'header[role="banner"] a[href="/notifications"], [data-testid*="AppTabBar"] a[href="/notifications"]'
+    )) {
+      for (const span of a.querySelectorAll('span')) {
+        if (/^\d+\+?$/.test(span.textContent.trim())) return true;
+      }
+    }
+    return false;
+  }
+
   // X swaps the tab favicon to a red-dot variant when there are unread
   // notifications, via a plain href mutation on <link rel="icon"> — no DOM
-  // node this extension's own subtree-scoped MutationObserver would catch.
-  // Track that link and, whenever its href drifts from the first ("clean")
-  // one we ever saw, revert it. Also re-observe if X replaces the node
-  // outright rather than mutating it in place.
+  // node this extension's own subtree-scoped MutationObserver would catch,
+  // and there can be more than one such <link> (different sizes/types).
+  // Rather than guessing which first-seen href is the "clean" one (wrong if
+  // notifications are already unread when this content script first runs),
+  // only ever record a link's href as clean at a moment we can prove
+  // notifications are read — then hold every icon link to that value.
   function handleFavicon() {
-    const link = document.querySelector('link[rel~="icon"]');
-    if (!link) return;
-    if (link !== observedFaviconLink) {
-      observedFaviconLink = link;
-      if (cleanFaviconHref === null) cleanFaviconHref = link.href;
-      new MutationObserver(handleFavicon).observe(link, { attributes: true, attributeFilter: ['href'] });
+    const links = document.querySelectorAll('link[rel~="icon"]');
+    if (!links.length) return;
+    const unread = notificationsUnread();
+    for (const link of links) {
+      if (!observedFaviconLinks.has(link)) {
+        observedFaviconLinks.add(link);
+        new MutationObserver(handleFavicon).observe(link, { attributes: true, attributeFilter: ['href'] });
+      }
+      if (!unread) link.dataset.dxCleanHref = link.href;
     }
-    if (isOn() && settings.hideBadges && cleanFaviconHref && link.href !== cleanFaviconHref) {
-      link.href = cleanFaviconHref;
+    if (!isOn() || !settings.hideBadges) return;
+    for (const link of links) {
+      const clean = link.dataset.dxCleanHref;
+      if (clean && link.href !== clean) link.href = clean;
     }
   }
 
