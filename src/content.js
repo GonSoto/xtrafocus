@@ -13,7 +13,6 @@
   // Settings that are handled purely by CSS, keyed to their <html> attribute.
   const ATTRS = {
     hideFeed: 'data-dx-hide-feed',
-    hideForYouTab: 'data-dx-hide-foryou',
     hideSidebar: 'data-dx-hide-sidebar',
     hideTrends: 'data-dx-hide-trends',
     hideWhoToFollow: 'data-dx-hide-wtf',
@@ -49,6 +48,7 @@
   let page = '';
   let lastHref = '';
   let forcedFollowing = false;
+  let followingActivePrev = false;
   let scanTimer = null;
   let observedFaviconLinks = new WeakSet();
 
@@ -387,11 +387,27 @@
     }
   }
 
+  // X renders the Home tab bar as div[role="tab"] elements (not anchors), so
+  // matching a[role="tab"] previously found zero tabs and silently no-opped —
+  // this and forceFollowingTab() below both match on [role="tab"] regardless
+  // of tag name so it doesn't matter which X uses.
+  function handleForYouTab() {
+    clearMarks('foryou-tab');
+    if (!settings.hideForYouTab || page !== 'home') return;
+    const tablist = document.querySelector('main [role="tablist"]');
+    if (!tablist) return;
+    const tabs = tablist.querySelectorAll('[role="tab"]');
+    if (tabs.length < 2) return;
+    // "For You" is always the first tab, "Following" the second.
+    const wrapper = tabs[0].closest('[role="presentation"]') || tabs[0];
+    wrapper.setAttribute('data-dx-hidden', 'foryou-tab');
+  }
+
   function forceFollowingTab() {
     if (!settings.followingOnly || page !== 'home' || forcedFollowing) return;
     const tablist = document.querySelector('main [role="tablist"]');
     if (!tablist) return;
-    const tabs = tablist.querySelectorAll('a[role="tab"]');
+    const tabs = tablist.querySelectorAll('[role="tab"]');
     if (tabs.length < 2) return;
     forcedFollowing = true;
     // "For You" is always the first tab, "Following" the second.
@@ -432,6 +448,7 @@
     handleDMDrawer();
     cleanTitle();
     handleFavicon();
+    handleForYouTab();
     forceFollowingTab();
     ensurePlaceholder();
   }
@@ -463,6 +480,15 @@
   // settings/pauseUntil itself, just reflects whatever they currently are.
   function refresh() {
     const on = isOn();
+    // forceFollowingTab() only ever auto-clicks once per navigation (so it
+    // doesn't fight a user who deliberately clicks back to "For You"), but
+    // turning the master switch or "Default to Following" on is a fresh
+    // request to switch, same as a navigation — without this, re-enabling
+    // either after the tab had already drifted to "For You" would silently
+    // no-op because the latch from the last time was still set.
+    const followingActive = on && settings.followingOnly;
+    if (followingActive && !followingActivePrev) forcedFollowing = false;
+    followingActivePrev = followingActive;
     if (on) {
       html.setAttribute('data-dx-on', '');
     } else {
@@ -484,6 +510,7 @@
       clearMarks('card-premium');
       clearMarks('sidebar-search');
       clearMarks('dm');
+      clearMarks('foryou-tab');
       const zen = document.getElementById('dx-zen');
       if (zen) zen.remove();
     }

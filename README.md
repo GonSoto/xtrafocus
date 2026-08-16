@@ -71,9 +71,9 @@ own — no need to remember to turn anything back on.
 - **DOM-driven hiding** ([src/content.js](src/content.js)): things CSS can't detect —
   sponsored posts (a localized "Ad"/"Promoted" label in the byline, or a paid-partnership
   disclosure link — both scoped to skip a quoted/embedded post so quoting a sponsored
-  tweet doesn't hide your own), numeric badge pills, "Discover more" sections,
-  auto-switching to the Following tab — are handled by a debounced `MutationObserver`
-  that marks elements with `data-dx-hidden`.
+  tweet doesn't hide your own), numeric badge pills, "Discover more" sections, the "For
+  You" tab, auto-switching to the Following tab — are handled by a debounced
+  `MutationObserver` that marks elements with `data-dx-hidden`.
 - **SPA awareness**: X never reloads the page, so a route watcher (Navigation API +
   fallback polling) keeps page-scoped rules (home vs. post vs. explore) accurate.
 - **Responsive-layout coverage**: X restructures primary navigation by window width —

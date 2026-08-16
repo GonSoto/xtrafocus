@@ -16,11 +16,6 @@ html[data-dx-on][data-dx-hide-feed][data-dx-page="home"] main [data-testid="prim
   display: none !important;
 }
 
-/* Hide only the "For You" tab (always the first tab on home). */
-html[data-dx-on][data-dx-hide-foryou][data-dx-page="home"] main [data-testid="primaryColumn"] div[role="tablist"] > div:first-child {
-  display: none !important;
-}
-
 /* --- Right sidebar ------------------------------------------------------- */
 
 html[data-dx-on][data-dx-hide-sidebar] [data-testid="sidebarColumn"] {
