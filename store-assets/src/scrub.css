@@ -1,0 +1,105 @@
+/* Redaction layer for the real x.com captures.
+   The capture is placed at exactly 1280x800 CSS px (the source PNGs are 2560x1600,
+   i.e. DPR 2), so every coordinate below is in 1280x800 space and maps 1:1 onto
+   what was on screen. The page background of the capture is pure #000000
+   ("Lights out" theme), so the covers below are invisible — only the substituted
+   names and avatars read as changed. */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { width: 1280px; height: 800px; overflow: hidden; background: #000; }
+
+.stage { position: relative; width: 1280px; height: 800px; }
+
+.stage > img {
+  position: absolute;
+  inset: 0;
+  width: 1280px;
+  height: 800px;
+  display: block;
+}
+
+/* A byline: black cover + substituted name / handle / timestamp, matching
+   X's own 15px sizing and colours. */
+.by {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #000;
+  font-family: "Segoe UI", -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.by b { color: #e7e9ea; font-weight: 700; }
+.by s { color: #71767b; font-weight: 400; text-decoration: none; }
+
+/* Small text, e.g. the trend category line */
+.by.sm { font-size: 13px; }
+
+/* Stacked name-over-handle, as used in "Who to follow" and the account button */
+.stack {
+  position: absolute;
+  background: #000;
+  font-family: "Segoe UI", -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  white-space: nowrap;
+}
+
+.stack b {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 15px;
+  line-height: 20px;
+  color: #e7e9ea;
+  font-weight: 700;
+}
+
+.stack s {
+  display: block;
+  font-size: 15px;
+  line-height: 20px;
+  color: #71767b;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+/* Trend block: category line over topic line */
+.trend {
+  position: absolute;
+  background: #000;
+  font-family: "Segoe UI", -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  white-space: nowrap;
+}
+
+.trend i {
+  display: block;
+  font-size: 13px;
+  line-height: 18px;
+  color: #71767b;
+  font-style: normal;
+}
+
+.trend b {
+  display: block;
+  font-size: 15px;
+  line-height: 20px;
+  color: #e7e9ea;
+  font-weight: 700;
+}
+
+/* Plain cover, for anything that just needs to disappear */
+.cover { position: absolute; background: #000; }
+
+/* Default X avatar, drawn rather than copied */
+.av { position: absolute; border-radius: 50%; overflow: hidden; display: block; }
+
+.badge { width: 15px; height: 15px; flex-shrink: 0; display: block; }
+
+/* Debug: ?debug=1 outlines every patch so alignment can be checked */
+body.debug .by,
+body.debug .stack,
+body.debug .trend,
+body.debug .cover,
+body.debug .av { outline: 1px solid #ff2d55; }

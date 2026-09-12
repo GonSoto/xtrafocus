@@ -1,0 +1,101 @@
+/* Shared layout for the 1280x800 store screenshots.
+   The popup on the right is the real popup/popup.html, rendered at its true
+   340x560 size and scaled up for legibility — not a mockup. */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { width: 1280px; height: 800px; overflow: hidden; }
+
+body {
+  background: #0f1419;
+  font-family: "Segoe UI", -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 56px;
+  padding: 0 72px;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  right: -180px; top: 50%;
+  width: 900px; height: 900px;
+  transform: translateY(-50%);
+  background: radial-gradient(circle, rgba(52,211,153,0.14), rgba(52,211,153,0) 62%);
+  pointer-events: none;
+}
+
+.copy {
+  flex: 1;
+  position: relative;
+  max-width: 600px;
+}
+
+.copy h1 {
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+
+.copy h1 em {
+  font-style: normal;
+  color: #34d399;
+}
+
+.copy p {
+  margin-top: 22px;
+  font-size: 21px;
+  line-height: 1.5;
+  color: #8b98a5;
+  font-weight: 400;
+}
+
+.copy ul {
+  margin-top: 30px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.copy li {
+  font-size: 18px;
+  color: #c9d1d9;
+  padding-left: 30px;
+  position: relative;
+  line-height: 1.35;
+}
+
+.copy li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 8px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #34d399;
+}
+
+/* The real popup, scaled 1.3x from its true 340x560 */
+.device {
+  position: relative;
+  flex-shrink: 0;
+  width: 442px;
+  height: 728px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #2f3336;
+  box-shadow: 0 30px 70px rgba(0,0,0,0.65);
+}
+
+.device iframe {
+  width: 340px;
+  height: 560px;
+  border: 0;
+  display: block;
+  transform: scale(1.3);
+  transform-origin: 0 0;
+}

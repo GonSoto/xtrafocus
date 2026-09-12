@@ -1,0 +1,90 @@
+/* Layout for the two full-window x.com captures (before / after).
+   Same background, type and card treatment as shot.css — the capture is wide,
+   so the copy sits above it rather than beside it. */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { width: 1280px; height: 800px; overflow: hidden; }
+
+body {
+  background: #0f1419;
+  font-family: "Segoe UI", -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  color: #fff;
+  padding: 26px 0;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  left: 50%; top: -260px;
+  width: 1100px; height: 700px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(52,211,153,0.13), rgba(52,211,153,0) 62%);
+  pointer-events: none;
+}
+
+header {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 0 112px;
+  height: 72px;
+  overflow: hidden;
+}
+
+header .text { flex: 1; }
+
+h1 {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 42px;
+}
+
+h1 em { font-style: normal; color: #34d399; }
+
+p {
+  margin-top: 6px;
+  font-size: 16px;
+  line-height: 22px;
+  color: #8b98a5;
+}
+
+.tag {
+  flex-shrink: 0;
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid #2f3336;
+  background: #151c22;
+  color: #8b98a5;
+}
+
+.tag.on {
+  border-color: rgba(52,211,153,0.45);
+  background: rgba(52,211,153,0.12);
+  color: #34d399;
+}
+
+/* The capture itself, at 1056x660 (the 1280x800 grab scaled to fit) */
+.frame {
+  position: relative;
+  margin: 16px auto 0;
+  width: 1056px;
+  height: 660px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #2f3336;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+}
+
+.frame img {
+  width: 1056px;
+  height: 660px;
+  display: block;
+}

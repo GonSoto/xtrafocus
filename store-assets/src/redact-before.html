@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>home.png — scrubbed</title>
+<link rel="stylesheet" href="scrub.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="dav" viewBox="0 0 48 48">
+    <rect width="48" height="48" fill="#333639"/>
+    <circle cx="24" cy="18.5" r="8.5" fill="#5b7083"/>
+    <path d="M24 29c-9 0-15.5 5.5-15.5 12.5V48h31v-6.5C39.5 34.5 33 29 24 29z" fill="#5b7083"/>
+  </symbol>
+  <symbol id="badge" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="11" fill="#1d9bf0"/>
+    <path d="M10.4 16.4 6.6 12.6 8 11.2l2.4 2.4 5.6-5.6 1.4 1.4z" fill="#fff"/>
+  </symbol>
+</svg>
+
+<div class="stage">
+  <img src="home.png" alt="">
+
+  <!-- "new posts" pill: three real avatars sitting on the blue pill.
+       The pill itself is #3f9cf3, so the cover under the replacements matches it. -->
+  <div class="cover" style="left:531px; top:73px; width:73px; height:32px; background:#3f9cf3; border-radius:16px"></div>
+  <svg class="av" style="left:532.5px; top:74px; width:30.5px; height:30.5px; border:2.5px solid #3f9cf3"><use href="#dav"/></svg>
+  <svg class="av" style="left:552.5px; top:74px; width:30.5px; height:30.5px; border:2.5px solid #3f9cf3"><use href="#dav"/></svg>
+  <svg class="av" style="left:572.5px; top:74px; width:30.5px; height:30.5px; border:2.5px solid #3f9cf3"><use href="#dav"/></svg>
+
+  <!-- post 1. The pill overlaps this byline from x=491.5 down to y=109.5, so the
+       cover is split around it and the replacement stops short of the pill. -->
+  <svg class="av" style="left:298.5px; top:102.5px; width:41px; height:41px"><use href="#dav"/></svg>
+  <div class="cover" style="left:491px; top:109.5px; width:70px; height:14px"></div>
+  <div class="by" style="left:344px; top:104px; width:147px; height:19px; padding-left:4px">
+    <b>User-2</b><svg class="badge"><use href="#badge"/></svg><s>@user-2</s>
+  </div>
+
+  <!-- post 1, quoted post -->
+  <svg class="av" style="left:359px; top:189px; width:25px; height:25px"><use href="#dav"/></svg>
+  <div class="by" style="left:384px; top:191px; width:310px; height:21px; padding-left:4.5px">
+    <b>User-3</b><svg class="badge"><use href="#badge"/></svg><s>@user-3</s><s>· 10 sept.</s>
+  </div>
+
+  <!-- post 2 -->
+  <svg class="av" style="left:298.5px; top:602px; width:41px; height:41px"><use href="#dav"/></svg>
+  <div class="by" style="left:344px; top:602px; width:235px; height:21px; padding-left:4px">
+    <b>User-4</b><svg class="badge"><use href="#badge"/></svg><s>@user-4</s><s>· 17h</s>
+  </div>
+
+  <!-- post 2, quoted post -->
+  <svg class="av" style="left:359px; top:688px; width:25px; height:25px"><use href="#dav"/></svg>
+  <div class="by" style="left:384px; top:690px; width:250px; height:21px; padding-left:4px">
+    <b>User-5</b><svg class="badge"><use href="#badge"/></svg><s>@user-5</s><s>· 20h</s>
+  </div>
+
+  <!-- trends. Row 3 is hovered in the capture, so its cover uses that row's
+       #080808 background rather than pure black. -->
+  <div class="trend" style="left:926px; top:63px; width:252px; height:38px; padding-left:4px">
+    <i>Deportes · Tendencia</i><b>Maratón de Madrid</b>
+  </div>
+  <div class="trend" style="left:926px; top:125px; width:252px; height:38px; padding-left:4px">
+    <i>Tecnología · Tendencia</i><b>WebGPU</b>
+  </div>
+  <div class="trend" style="left:926px; top:187px; width:252px; height:38px; padding-left:4px; background:#080808">
+    <i>Música · Tendencia</i><b>Nuevo álbum</b>
+  </div>
+  <div class="trend" style="left:926px; top:249px; width:252px; height:38px; padding-left:4px">
+    <i>Cine · Tendencia</i><b>Festival de Cine</b>
+  </div>
+
+  <!-- who to follow -->
+  <svg class="av" style="left:928.5px; top:427.5px; width:41px; height:41px"><use href="#dav"/></svg>
+  <div class="stack" style="left:976px; top:429px; width:185px; height:40px; padding-left:2px">
+    <b>User-6 <svg class="badge"><use href="#badge"/></svg></b><s>@user-6</s>
+  </div>
+
+  <svg class="av" style="left:928.5px; top:493px; width:41px; height:41px"><use href="#dav"/></svg>
+  <div class="stack" style="left:976px; top:494px; width:185px; height:40px; padding-left:2px">
+    <b>User-7 <svg class="badge"><use href="#badge"/></svg></b><s>@user-7</s>
+  </div>
+
+  <svg class="av" style="left:928.5px; top:558.5px; width:41px; height:41px"><use href="#dav"/></svg>
+  <div class="stack" style="left:976px; top:559px; width:185px; height:40px; padding-left:2px">
+    <b>User-8</b><s>@user-8</s>
+  </div>
+
+  <!-- signed-in account, bottom of the nav -->
+  <svg class="av" style="left:27px; top:735px; width:41px; height:41px"><use href="#dav"/></svg>
+  <div class="stack" style="left:77px; top:730px; width:90px; height:50px; padding:6px 0 0 2px">
+    <b>User-1</b><s>@user-1</s>
+  </div>
+</div>
+
+<script>
+  if (new URLSearchParams(location.search).get('debug')) document.body.classList.add('debug');
+</script>
+</body>
+</html>
