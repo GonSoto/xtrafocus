@@ -64,6 +64,13 @@ main.off {
   pointer-events: none;
 }
 
+/* The pause rows are toggled via the `hidden` property in popup.js. Their own
+   `display: flex` below would otherwise beat the UA stylesheet's
+   `[hidden] { display: none }`, leaving all three rows visible at once. */
+.pause-bar [hidden] {
+  display: none;
+}
+
 .pause-controls {
   display: flex;
   gap: 8px;

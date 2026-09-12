@@ -5,3 +5,6 @@ out/
 .env
 .claude/
 submission.md
+# Raw, unscrubbed x.com captures — local inputs to store-assets/render.js, never published
+store-assets/home.png
+store-assets/home-after.png
